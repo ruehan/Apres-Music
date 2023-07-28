@@ -9,6 +9,10 @@ function LoginForm() {
   const router = useRouter();
   const { data: session } = useSWR("/api/user", fetcher);
 
+  const clickSignup = () => {
+    router.push("/sign-up");
+  };
+
   if (session?.isLoggedIn) {
     router.push("/");
   }
@@ -44,7 +48,12 @@ function LoginForm() {
         {errors.password && <p className="text-red-500 mb-4 font-bold">This field is required</p>}
 
         <button type="submit"  className="w-24 h-10 bg-red-500 text-white font-bold mt-4">Login</button>
+        <div className="flex">
+          <div>Dont have a profile?</div>
+          <div onClick={clickSignup} className="text-blue-300 ml-4 cursor-pointer">Sign up for FREE</div>
+        </div>
       </form>
+      
       </div>
       <div className="bg-music bg-center w-full h-screen">
 

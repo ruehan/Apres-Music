@@ -23,6 +23,10 @@ function SignupForm() {
     }
   };
 
+  const clickLogin = () => {
+    router.push("/log-in");
+  };
+
   return (
     <>
         <section className="grid grid-cols-2 w-full h-screen overflow-hidden">
@@ -43,6 +47,10 @@ function SignupForm() {
                     {errors.password && <p className="text-red-500 mb-4 font-bold">This field is required</p>}
 
                     <button type="submit" className="w-24 h-10 bg-red-500 text-white font-bold mt-4">Sign Up</button>
+                    <div className="flex">
+                      <div>Have an account?</div>
+                      <div onClick={clickLogin} className="text-blue-300 ml-4 cursor-pointer">Log in.</div>
+                    </div>
                 </form>
             </div>
             <div className="bg-music bg-center w-full h-screen">

@@ -1,4 +1,4 @@
-const apiKey = '6887471e68c1280f33d5882bc1d790d4'
+const apiKey = process.env.API_KEY
 
 export default async function handler(req, res) {
 

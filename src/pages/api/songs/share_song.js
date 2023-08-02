@@ -1,10 +1,34 @@
 const apiKey = process.env.API_KEY
 
-export default async function handler(req, res) {
+import { PrismaClient } from "@prisma/client";
+import withSession from "../../../utils/session";
 
-    const { artist, song, description, genre } = req.body;
+const prisma = new PrismaClient();
 
-    console.log(artist, song, description, genre)
+export default withSession(async (req, res) => {
 
-    // res.json(artistData)
-}
+    const user = req.session.get("user");
+
+    console.log(user)
+
+    const { artist, songName, description, genre } = req.body;
+
+    const genreArray = genre.split('#')
+
+    genreArray.shift()
+
+
+    const share = await prisma.share.create({
+        data: {
+            artist: artist,
+            song: songName,
+            description: description,
+            genre: genreArray.toString(),
+            name: user.name,
+            url: ""
+        }
+    })
+
+    res.status(200).json(share);
+
+})

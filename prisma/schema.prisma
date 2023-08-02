@@ -16,3 +16,13 @@ model User {
   email     String    @unique
   password  String
 }
+
+model Share {
+  id        Int      @id @default(autoincrement())
+  name      String
+  artist    String
+  song      String
+  description String
+  genre     String 
+  url       String
+}

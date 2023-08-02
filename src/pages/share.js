@@ -23,9 +23,14 @@ export default function Share() {
         formState: { errors },
       } = useForm();
       
-      const onSubmit = data => {
-        // Your POST request here
-        // DB 저장 부분 추가
+      const onSubmit = async data => {
+        const fetchSubmit = await fetch('/api/songs/share_song', {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
 
       };
 
@@ -89,12 +94,12 @@ export default function Share() {
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-items-center content-center items-center w-full" >
             <div className="w-2/6 h-12 m-8 flex ">
                 <div className="w-24 text-center mr-4 flex items-center">가수 이름</div>
-                <input {...register('artist', { required: "This field is required" })} placeholder="Artist Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeArtist} />
+                <input {...register('artist', { required: "This field is required" })} value={artist} placeholder="Artist Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeArtist} />
                 <div className="bg-gray-200 w-16 pl-2  ml-4 rounded-2xl flex items-center" onClick={onClickArtist}>검색</div>
             </div>
             <div className="flex justify-items-center content-center items-center ml-8">
                 {artistData ? artistData.map((artist) => (
-                        <button disabled key={artist.name} className="mr-4 active:text-red-400 active:font-bold">{artist.name}</button>
+                        <p key={artist.name} className="mr-4 active:text-red-400 active:font-bold" onClick={e => setArtist(e.target.innerText)}>{artist.name}</p>
                 )) : null
                 }
             </div>
@@ -102,12 +107,12 @@ export default function Share() {
             
             <div className="w-2/6 h-12 m-8 flex ">
                 <div className="w-24 text-center mr-4 flex items-center">곡 이름</div>
-                <input {...register('song', { required: "This field is required" })} placeholder="Song Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeSongName}  />
+                <input {...register('song', { required: "This field is required" })} value={songName} placeholder="Song Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeSongName}  />
                 <div className="bg-gray-200 w-16 pl-2  ml-4 rounded-2xl flex items-center" onClick={onClickSongName}>검색</div>
             </div>
             <div className="flex justify-items-center content-center items-center ml-8">
                 {songNameData ? songNameData.map((song) => (
-                        <button disabled key={song.name} className="mr-4 active:text-red-400 active:font-bold">{song.name}</button>
+                        <p key={song.name} className="mr-4 active:text-red-400 active:font-bold" onClick={e => setSongName(e.target.innerText)}>{song.name}</p>
                 )) : null
                 }
             </div>

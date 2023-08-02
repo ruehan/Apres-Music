@@ -24,9 +24,12 @@ export default function Share() {
       } = useForm();
       
       const onSubmit = async data => {
+
+        const { description, genre } = data;
+
         const fetchSubmit = await fetch('/api/songs/share_song', {
           method: "POST",
-          body: JSON.stringify(data),
+          body: JSON.stringify({artist, songName, description, genre}),
           headers: {
             "Content-Type": "application/json",
           }
@@ -58,9 +61,17 @@ export default function Share() {
 
         const artistData = await fetchArtist.json()
 
-        console.log(artistData.results.artistmatches.artist)
+        let tempData = []
 
-        setArtistData(artistData.results.artistmatches.artist.slice(0, 3))
+        artistData.results.artistmatches.artist.map((artist) => {
+          tempData.push(artist.listeners)
+        })
+
+        const val = Math.max.apply(null, tempData)
+
+        const firstData = artistData.results.artistmatches.artist[tempData.indexOf(String(val))]
+
+        setArtistData([firstData])
       }
 
       const onClickSongName = async () => {
@@ -89,12 +100,17 @@ export default function Share() {
         return <div>Loading...</div>;
     }
 
+    if (!user.isLoggedIn) {
+      router.push('/log-in');
+      return <div>Loading...</div>;
+    }
+
     return ( 
         <div className="w-full h-screen flex justify-center items-center">
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-items-center content-center items-center w-full" >
             <div className="w-2/6 h-12 m-8 flex ">
                 <div className="w-24 text-center mr-4 flex items-center">가수 이름</div>
-                <input {...register('artist', { required: "This field is required" })} value={artist} placeholder="Artist Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeArtist} />
+                <input {...register('artist', { required: "입력이 필요합니다." })} value={artist} placeholder="Artist Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeArtist} />
                 <div className="bg-gray-200 w-16 pl-2  ml-4 rounded-2xl flex items-center" onClick={onClickArtist}>검색</div>
             </div>
             <div className="flex justify-items-center content-center items-center ml-8">
@@ -107,7 +123,7 @@ export default function Share() {
             
             <div className="w-2/6 h-12 m-8 flex ">
                 <div className="w-24 text-center mr-4 flex items-center">곡 이름</div>
-                <input {...register('song', { required: "This field is required" })} value={songName} placeholder="Song Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeSongName}  />
+                <input {...register('song', { required: "입력이 필요합니다." })} value={songName} placeholder="Song Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeSongName}  />
                 <div className="bg-gray-200 w-16 pl-2  ml-4 rounded-2xl flex items-center" onClick={onClickSongName}>검색</div>
             </div>
             <div className="flex justify-items-center content-center items-center ml-8">
@@ -119,20 +135,24 @@ export default function Share() {
             {errors.song && <span>{errors.song.message}</span>}
             <div className="w-2/6 h-12 m-8 flex">
                 <div className="w-24 text-center mr-4 flex items-center">곡 설명</div>
-                <input {...register('description', { required: "This field is required" })} placeholder="Song Description" className="w-5/6 h-12 border-2 border-rose-600 pl-4" />
+                <input {...register('description', { required: "입력이 필요합니다." })} placeholder="Song Description" className="w-5/6 h-12 border-2 border-rose-600 pl-4" />
                 <button disabled className="w-16 ml-4"></button>
             </div>
             {errors.description && <span>{errors.description.message}</span>}
             
             <div className="w-2/6 h-12 m-8 flex">
-                <div className="w-24 text-center mr-4 flex items-center">장르</div>
-                <input {...register('genre', { required: "This field is required" })} placeholder="Genre" className="w-5/6 h-12 border-2 border-rose-600 pl-4" />
+                <div className="w-24 text-center mr-4 flex items-center">분위기</div>
+                <input {...register('genre', { required: "입력이 필요합니다.", validate: { tag: (value) => value.includes("#") || "#을 붙여주세요. 예시) #발라드#조용한" } })} placeholder="Genre" className="w-5/6 h-12 border-2 border-rose-600 pl-4" />
                 <button disabled className="w-16 ml-4"></button>
             </div>
             {errors.genre && <span>{errors.genre.message}</span>}
             
             <input type="submit" className="w-1/6 h-12 bg-red-100 rounded-3xl" />
             </form>
+
+            <div className="fixed top-16 left-4">
+              
+            </div>
         </div>
       );
 }

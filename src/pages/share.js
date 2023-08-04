@@ -27,6 +27,19 @@ export default function Share() {
 
         const { description, genre } = data;
 
+        const fetchAlbumImg = await fetch('/api/songs/album_img', {
+          method: 'POST',
+          body: JSON.stringify({ songName, artist }),
+          headers: {
+              'Content-Type': 'application/json',
+            },
+        })
+
+        const albumData = await fetchAlbumImg.json()
+
+        console.log(albumData.results.trackmatches.track[0].image[2]['#text'])
+
+
         const fetchSubmit = await fetch('/api/songs/share_song', {
           method: "POST",
           body: JSON.stringify({artist, songName, description, genre}),
@@ -34,6 +47,8 @@ export default function Share() {
             "Content-Type": "application/json",
           }
         })
+
+        router.push('/');
 
       };
 

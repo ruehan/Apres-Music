@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import LoginForm from "./components/Login/LoginForm";
 import useSWR, { mutate } from "swr";
+import Playlist from "./layout/Playlist";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -33,7 +34,7 @@ export default function Home() {
     <>
       <div className="grid grid-cols-4 auto-rows-min w-full h-screen">
         {share.map((share) => (
-          <div key={share.artist} className="bg-gray-100 p-4 m-4 rounded-lg mt-24 flex flex-col">
+          <div key={share.id} className="bg-gray-100 p-4 m-4 rounded-lg mt-24 flex flex-col">
             <h1 className="text-2xl font-bold m-2">{share.song}</h1>
             <h2 className="text-xl font-bold m-2">{share.artist}</h2>
             <p className="text-md m-2">{share.description}</p>
@@ -44,6 +45,8 @@ export default function Home() {
         ))
         }
       </div>
+
+      <Playlist />
     </>
   )
 }

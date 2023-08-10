@@ -33,7 +33,7 @@ export default function HeaderLayout() {
     console.log(user, email)
 
     return (
-        <div className="w-full h-16 bg-gray-900 fixed grid grid-cols-2">
+        <div className="w-full h-16 bg-gray-900 fixed grid grid-cols-2 z-40">
             <div className="flex justify-start content-center items-center">
                <button className="text-white ml-2 mr-2 text-2xl w-24 h-10" onClick={() => router.push('/')}>Home</button>
             </div>

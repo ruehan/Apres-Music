@@ -31,7 +31,6 @@ export default withSession(async (req, res) => {
         share.map(async (share) => {
 
             try{
-
                 const likes = await prisma.like.findMany({
                     where: {
                         name: user.name,
@@ -71,25 +70,21 @@ export default withSession(async (req, res) => {
 
         data.push(num.length)
 
-        // console.log(data)
-    }
 
-    console.log(data)
+    }
 
     liked.map((like) => {
         for(let i = 0; i < share.length; i++){
             if(like.songId === share[i].id){
                 share[i].isLiked = like.isLiked
                 share[i].likes = data[i]
-
             }
         }
     })
 
-
+    share.sort((a, b) => b.likes - a.likes)
+    
     console.log(share)
-
-
 
     res.status(200).json(share);
 });

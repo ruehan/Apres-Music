@@ -10,13 +10,14 @@ export default function Home() {
 
   const { data: user, error: userError } = useSWR('/api/user', fetcher);
 
+  // 다른 방식으로 변경 필요 
   const { data: share, error: shareError } = useSWR('/api/songs/get_song', fetcher);
 
 
   const router = useRouter();
 
-  const requestUpdate = async (id) => {
-    await fetch('/api/songs/change_like', {
+  const requestUpdate = async (id, addr) => {
+    await fetch(addr, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -33,9 +34,20 @@ export default function Home() {
 
     if(!share) return;
 
-    await requestUpdate(id)
+    await requestUpdate(id, '/api/songs/change_like')
  
     mutate('/api/songs/get_song')
+    // router.push('/')
+  }
+
+  const clickDelete = async (e) => {
+    const id = e.target.id
+
+    if(!share) return;
+
+    await requestUpdate(id, '/api/songs/delete')
+ 
+    // mutate('/api/songs/get_song')
 
   }
 
@@ -73,6 +85,10 @@ export default function Home() {
 
             <div className="absolute w-8 h-8 right-4 bottom-4 z-30 cursor-pointer flex justify-center items-center text-sm font-bold" onClick={clickLike} id={share.id}>{share.likes}</div>
               
+
+            {share.name === user.name ? (
+              <div className="absolute top-6 right-4 w-12 h-8 bg-blue-200 rounded-xl flex justify-center items-center" onClick={clickDelete} id={share.id} >delete</div>
+            ) : null}
           </div>
 
         ))

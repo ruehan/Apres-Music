@@ -86,6 +86,8 @@ export default function Share() {
 
         const firstData = artistData.results.artistmatches.artist[tempData.indexOf(String(val))]
 
+        console.log(firstData)
+
         setArtistData([firstData])
       }
 
@@ -101,13 +103,29 @@ export default function Share() {
               },
         })
 
-        const songNameData = await fetchSongName.json()
+        const fetchtext = await fetch('/api/text', {
+          method: 'POST',
+          body: JSON.stringify({ songName }),
+          headers: {
+              'Content-Type': 'application/json',
+            },
+      })
 
-        console.log(songNameData)
+        // const songNameData = await fetchSongName.json()
 
-        console.log(songNameData.results.trackmatches.track)
+        // console.log(songNameData)
 
-        setSongNameData(songNameData.results.trackmatches.track.slice(0, 3))
+        // console.log(songNameData.results.trackmatches.track)
+
+        // setSongNameData(songNameData.results.trackmatches.track.slice(0, 3))
+
+
+        const songtext= await fetchtext.json()
+
+        console.log(songtext)
+
+        console.log(songtext.rss.channel.item.title._cdata)
+        console.log(songtext.rss.channel.item.album.image._cdata)
       }
     
     

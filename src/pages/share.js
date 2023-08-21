@@ -76,19 +76,36 @@ export default function Share() {
 
         const artistData = await fetchArtist.json()
 
+        console.log(artistData.rss.channel.item)
+
+        const tmp_dt = artistData.rss.channel.item
+
+        if(typeof(tmp_dt) == "object"){
+          for(var key in tmp_dt){
+            if(key === "image" || key === "relatedartistlist"){
+              console.log(tmp_dt[key])
+            }
+          }
+        }else{
+          tmp_dt.map((item) => {
+            console.log(item.title._cdata)
+          })
+        }
+
         let tempData = []
 
-        artistData.results.artistmatches.artist.map((artist) => {
-          tempData.push(artist.listeners)
-        })
+        // artistData.results.artistmatches.artist.map((artist) => {
+          // tempData.push(artist.listeners)
+        // })
 
         const val = Math.max.apply(null, tempData)
 
-        const firstData = artistData.results.artistmatches.artist[tempData.indexOf(String(val))]
+        // const firstData = artistData.results.artistmatches.artist[tempData.indexOf(String(val))]
 
-        console.log(firstData)
+        // console.log(firstData)
 
-        setArtistData([firstData])
+        // setArtistData([firstData])
+
       }
 
       const onClickSongName = async () => {
@@ -120,12 +137,18 @@ export default function Share() {
         // setSongNameData(songNameData.results.trackmatches.track.slice(0, 3))
 
 
-        const songtext= await fetchtext.json()
+        const songtext = await fetchtext.json()
 
         console.log(songtext)
+        // console.log(typeof(songtext))
 
-        console.log(songtext.rss.channel.item.title._cdata)
-        console.log(songtext.rss.channel.item.album.image._cdata)
+
+        songtext.rss.channel.item.map((item) => {
+          console.log(item.artist.name._cdata)
+        })
+
+        // console.log(songtext.rss.channel.item.title._cdata)
+        // console.log(songtext.rss.channel.item.album.image._cdata)
       }
     
     

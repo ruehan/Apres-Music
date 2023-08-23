@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { useState } from 'react';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -11,11 +11,17 @@ export default function Share() {
 
     const router = useRouter();
 
+    const [searchPage, setSearchPage] = useState(false)
+
     const [artist, setArtist] = useState('')
     const [artistData, setArtistData] = useState([])
 
     const [songName, setSongName] = useState('')
     const [songNameData, setSongNameData] = useState([])
+
+    const [artistArray, setArtistArray] = useState([])
+    const [memberArray, setMemberArray] = useState([])
+    const [imageArray, setImageArray] = useState([])
 
     const {
         register,
@@ -62,6 +68,10 @@ export default function Share() {
         
       }
 
+      const onClickSearch = () => {
+        setSearchPage(!searchPage)
+      }
+
       const onClickArtist = async () => {
 
         console.log(JSON.stringify(artist))
@@ -76,37 +86,38 @@ export default function Share() {
 
         const artistData = await fetchArtist.json()
 
-        console.log(artistData.rss.channel.item)
-
         const tmp_dt = artistData.rss.channel.item
 
+        var tmp_artist = []
+        var tmp_image = []
+        var tmp_member = []
+
+        
+
         if(typeof(tmp_dt) == "object"){
+
           for(var key in tmp_dt){
-            if(key === "image" || key === "relatedartistlist"){
-              console.log(tmp_dt[key])
+            if(key === "image" || key === "relatedartistlist" || key==="title"){
+              key === "title" ? setArtistArray([tmp_dt[key]._cdata]) : key === "image" ? setImageArray([tmp_dt[key]._cdata]) : setMemberArray([tmp_dt[key]._cdata])
+            }else if(key in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"]){
+              for(var key2 in tmp_dt[key]){
+                  if(key2 === "image" || key2 === "relatedartistlist" || key2 ==="title"){
+                    key2 === "title" ? tmp_artist.push(tmp_dt[key][key2]._cdata) : key2 === "image" ? tmp_image.push(tmp_dt[key][key2]._cdata) : tmp_member.push(tmp_dt[key][key2]._cdata)
+                  }
+                }
+
+
+                setArtistArray(tmp_artist)
+                setImageArray(tmp_image)
+                setMemberArray(tmp_member)
             }
           }
-        }else{
-          tmp_dt.map((item) => {
-            console.log(item.title._cdata)
-          })
         }
 
-        let tempData = []
-
-        // artistData.results.artistmatches.artist.map((artist) => {
-          // tempData.push(artist.listeners)
-        // })
-
-        const val = Math.max.apply(null, tempData)
-
-        // const firstData = artistData.results.artistmatches.artist[tempData.indexOf(String(val))]
-
-        // console.log(firstData)
-
-        // setArtistData([firstData])
+        console.log(artistArray)
 
       }
+
 
       const onClickSongName = async () => {
 
@@ -150,6 +161,17 @@ export default function Share() {
         // console.log(songtext.rss.channel.item.title._cdata)
         // console.log(songtext.rss.channel.item.album.image._cdata)
       }
+
+    const rendering = () => {
+
+      const result = []
+
+      for(let i = 0; i < artistArray.length; i++){
+          result.push(<div className="flex justify-left items-center p-2" key={i}><img src={imageArray[i]} width="100px" height="auto"></img><p className="ml-4 mr-4 text-md font-bold" >{artistArray[i]}</p><p>{memberArray[i]}</p></div>)
+        
+      }
+      return result;
+    }
     
     
     if (!user) {
@@ -161,13 +183,20 @@ export default function Share() {
       return <div>Loading...</div>;
     }
 
+    console.log(artistArray)
+
+    console.log(artistArray.length > 0)
+
     return ( 
+      <>
         <div className="w-full h-screen flex justify-center items-center">
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-items-center content-center items-center w-full" >
             <div className="w-2/6 h-12 m-8 flex ">
                 <div className="w-24 text-center mr-4 flex items-center">가수 이름</div>
                 <input {...register('artist', { required: "입력이 필요합니다." })} value={artist} placeholder="Artist Name" className="w-5/6 h-12 border-2 border-rose-600 pl-4" onChange={onChangeArtist} />
-                <div className="bg-gray-200 w-16 pl-2  ml-4 rounded-2xl flex items-center" onClick={onClickArtist}>검색</div>
+                <div className="bg-gray-200 w-16 pl-2  ml-4 rounded-2xl flex items-center" onClick={() => {
+                  onClickArtist() 
+                  onClickSearch()}}>검색</div>
             </div>
             <div className="flex justify-items-center content-center items-center ml-8">
                 {artistData ? artistData.map((artist) => (
@@ -210,5 +239,11 @@ export default function Share() {
               
             </div>
         </div>
+        {searchPage && artistArray.length > 0 ? (
+          <div className="bg-gray-200 fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-5/6 h-5/6 z-30 rounded-2xl bg-white/50 backdrop-blur-sm border-2 border-gray-300 overflow-y-scroll grid grid-rows-min">
+            {artistArray.length > 0 ? rendering() : null}
+          </div>
+        ) : null}
+        </>
       );
 }
